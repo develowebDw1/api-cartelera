@@ -2,8 +2,7 @@ const puppeteer = require('puppeteer');
 const moment = require('moment')
 
 const getFunctionsCineHoys = async (crawlerDis, crawler) => {
-    moment.locale("es-mx")
-    const meses = { 01: "enero", 02: "febrero", 03: "marzo", 04: "abril", 05: "mayo", 06: "junio", 07: "julio", 08: "agosto", 09: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre" }
+    const meses = { '01': "enero",'02': "febrero", '03': "marzo", '04': "abril", '05': "mayo", '06': "junio", '07': "julio", '08': "agosto", '09': "septiembre", '10': "octubre", '11': "noviembre", '12': "diciembre" }
     const browser = await puppeteer.launch({
         headless: true,
         args: ["--no-sandbox", "--disabled-setupid-sandbox"],
@@ -71,7 +70,7 @@ const getFunctionsCineHoys = async (crawlerDis, crawler) => {
 }
 
 const getFunctionsCinemark = async (crawler) => {
-    const meses = { 01: "ENE.", 02: "FEB.", 03: "MAR.", 04: "ABR.", 05: "MAY.", 06: "JUN.", 07: "JUL.", 08: "AGO.", 09: "SEP.", 10: "OCT.", 11: "NOV.", 12: "DIC." }
+    const meses = { '01': "ENE.", '02': "FEB.", '03': "MAR.", '04': "ABR.", '05': "MAY.", '06': "JUN.", '07': "JUL.", '08': "AGO.", '09': "SEP.", '10': "OCT.", '11': "NOV.", '12': "DIC." }
     const browser = await puppeteer.launch({ 
         headless: true, 
         args: ["--no-sandbox", "--disabled-setupid-sandbox"], 
@@ -266,13 +265,6 @@ const getFunctionsCineStar = async () => {
 
     await browser.close();
     return data;
-}
-
-function myFlatFunction (input) {
-    return input.reduce( function(inputArray , inputToFlat) {
-        return inputArray.concat(Array.isArray(inputToFlat) ? myFlatFunction(inputToFlat) : inputToFlat )
-    }
-    ,[])
 }
 
 module.exports = {

@@ -13,7 +13,7 @@ const getFunctionsCinemark = async (district, cine) => {
     
     let filters = await page.$$("div.list-movies>.week .week__day");
     let data = [];
-    let meses = { 01: "ENE", 02: "FEB", 03: "MAR", 04: "ABR", 05: "MAY", 06: "JUN", 07: "JUL", 08: "AGO", 09: "SEP", 10: "OCT", 11: "NOV", 12: "DIC" };
+    let meses = { '01': "ENE", '02': "FEB", '03': "MAR", '04': "ABR", '05': "MAY", '06': "JUN", '07': "JUL", '08': "AGO", '09': "SEP", '10': "OCT", '11': "NOV", '12': "DIC" };
 
     for (let index = 0; index < filters.length; index++) {
         const date = await page.evaluate( filter => {
@@ -77,7 +77,7 @@ const getFunctionsMulticines = async () => {
 }
 
 const getFunctionsSuperCines = async () => {
-    const meses = { 01: "Enero", 02: "Febrero", 03: "Marzo", 04: "Abril", 05: "Mayo", 06: "Junio", 07: "Julio", 08: "Agosto", 09: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre" }
+    const meses = { '01': "Enero", '02': "Febrero", '03': "Marzo", '04': "Abril", '05': "Mayo", '06': "Junio", '07': "Julio", '08': "Agosto", '09': "Septiembre", '10': "Octubre", '11': "Noviembre", '12': "Diciembre" }
     const browser = await puppeteer.launch({ 
         headless: true, 
         args: ["--no-sandbox", "--disabled-setupid-sandbox"], 

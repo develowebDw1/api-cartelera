@@ -83,7 +83,7 @@ const getFunctionsCinemark = async (crawlerDist, crawler) => {
 
     let filters = await page.$$("div.jsx-281138370.list-movies>.week .week__day");
     let data = [];
-    let meses = { 01: "ENE", 02: "FEB", 03: "MAR", 04: "ABR", 05: "MAY", 06: "JUN", 07: "JUL", 08: "AGO", 09: "SEP", 10: "OCT", 11: "NOV", 12: "DIC" };
+    let meses = { '01': "ENE", '02': "FEB", '03': "MAR", '04': "ABR", '05': "MAY", '06': "JUN", '07': "JUL", '08': "AGO", '09': "SEP", '10': "OCT", '11': "NOV", '12': "DIC" };
 
     for (let index = 0; index < filters.length; index++) {
         const date = await page.evaluate( filter => {
@@ -254,7 +254,7 @@ async function procianlTpl (page) {
 }
 
 function parseDate (date) {
-    const meses = { 01: "Ene", 02: "Feb", 03: "Mar", 04: "Abr", 05: "May", 06: "Jun", 07: "Jul", 08: "Ago", 09: "Sep", 10: "Oct", 11: "Nov", 12: "Dic" }
+    const meses = { '01': "Ene", '02': "Feb", '03': "Mar", '04': "Abr", '05': "May", '06': "Jun", '07': "Jul", '08': "Ago", '09': "Sep", '10': "Oct", '11': "Nov", '12': "Dic" }
     let dateSlice = date.slice(5, date.length)
     let dateSplit = dateSlice.split(" ")
     let dateDia = dateSplit[1] >= 10 ? dateSplit[1] : "0" + dateSplit[1]
@@ -265,7 +265,7 @@ function parseDate (date) {
 }
 
 const getFunctionsCinepolis = async (crawlerDist, crawler) => {
-    const meses = { 01: "enero", 02: "febrero", 03: "marzo", 04: "abril", 05: "mayo", 06: "junio", 07: "julio", 08: "agosto", 09: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre" }
+    const meses = { '01': "enero", '02': "febrero", '03': "marzo", '04': "abril", '05': "mayo", '06': "junio", '07': "julio", '08': "agosto", '09': "septiembre", '10': "octubre", '11': "noviembre", '12': "diciembre" }
     const browser = await puppeteer.launch({
         headless: true,
         defaultViewport: null,
@@ -277,7 +277,12 @@ const getFunctionsCinepolis = async (crawlerDist, crawler) => {
         waitUntil: ['domcontentloaded']
     })
 
-    await page.waitForSelector("article.row.tituloPelicula .descripcion.col8")
+    try {
+        await page.waitForSelector("article.row.tituloPelicula .descripcion.col8", { timeout: 6000 })
+    } catch (e) {
+        await browser.close();
+        return []
+    }
     let fechasOption = await page.$$("#cmbFechas option")
     const data = []
 

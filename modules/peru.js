@@ -60,7 +60,7 @@ const getFunctionsCineplanet = async (crawler) => {
 }
 
 const getFunctionsCinemark = async (crawler) => {
-    const meses = { 01: "ENE.", 02: "FEB.", 03: "MAR.", 04: "ABR.", 05: "MAY.", 06: "JUN.", 07: "JUL.", 08: "AGO.", 09: "SEP.", 10: "OCT.", 11: "NOV.", 12: "DIC." }
+    const meses = { '01': "ENE.", '02': "FEB.", '03': "MAR.", '04': "ABR.", '05': "MAY.", '06': "JUN.", '07': "JUL.", '08': "AGO.", '09': "SEP.", '10': "OCT.", '11': "NOV.", '12': "DIC." }
     const browser = await puppeteer.launch({ 
         headless: true,
         args: ["--no-sandbox", "--disabled-setupid-sandbox"],
@@ -75,12 +75,12 @@ const getFunctionsCinemark = async (crawler) => {
     await page.waitForTimeout(1500)
     try {
         await page.waitForSelector("#theatre-show>div:nth-child(2):not(.loading-container)")
+        await page.waitForSelector(".billboard-days li button")
     } catch (e) {
         await browser.close();
         return [];
     }
-
-    await page.waitForSelector(".billboard-days li button")
+    
     // await page.click("div.change-theatre-button button.next")
 
     const filtroFechas = await page.$$(".billboard-days li button")
@@ -128,7 +128,7 @@ const getFunctionsCinemark = async (crawler) => {
 }
 
 const getFunctionsCinepolis = async (crawlerDist, crawler) => {
-    const meses = { 01: "enero", 02: "febrero", 03: "marzo", 04: "abril", 05: "mayo", 06: "junio", 07: "julio", 08: "agosto", 09: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre" }
+    const meses = { '01': "enero", '02': "febrero", '03': "marzo", '04': "abril", '05': "mayo", '06': "junio", '07': "julio", '08': "agosto", '09': "septiembre", '10': "octubre", '11': "noviembre", '12': "diciembre" }
     const browser = await puppeteer.launch({
         headless: true,
         defaultViewport: null,
@@ -196,7 +196,7 @@ const getFunctionsCinepolis = async (crawlerDist, crawler) => {
 }
 
 const getFunctionsCineStar = async (crawler) => {
-    const meses = { 01: "ene.", 02: "feb.", 03: "mar.", 04: "abr.", 05: "may.", 06: "jun.", 07: "jul.", 08: "ago.", 09: "sep.", 10: "oct.", 11: "nov.", 12: "dic." }
+    const meses = { '01': "ene.", '02': "feb.", '03': "mar.", '04': "abr.", '05': "may.", '06': "jun.", '07': "jul.", '08': "ago.", '09': "sep.", '10': "oct.", '11': "nov.", '12': "dic." }
 
     const browser = await puppeteer.launch({
         headless: true,
@@ -254,7 +254,7 @@ const getFunctionsCineStar = async (crawler) => {
             }
             const horariosObj = [{ formato: pelicula.formato, times: timesObj }]
 
-            teatrosObj.push({ pelicula: pelicula.nombre, horarios: horariosObj })
+            teatrosObj.push({ pelicula: pelicula.nombre.replace(/\s+/g, ' ') , horarios: horariosObj })
 
             await page.goto(`https://www.cinestar.com.pe/cines/${crawler}/peliculas`, {
                 waitUntil: ['domcontentloaded']
@@ -289,7 +289,7 @@ const getFunctionsCineStar = async (crawler) => {
 }
 
 const getFunctionsMovieTime = async (crawler) => {
-    const meses = { 01: "ene.", 02: "feb.", 03: "mar.", 04: "abr.", 05: "may.", 06: "jun.", 07: "jul.", 08: "ago.", 09: "sep.", 10: "oct.", 11: "nov.", 12: "dic." }
+    const meses = { '01': "ene.", '02': "feb.", '03': "mar.", '04': "abr.", '05': "may.", '06': "jun.", '07': "jul.", '08': "ago.", '09': "sep.", '10': "oct.", '11': "nov.", '12': "dic." }
 
     const browser = await puppeteer.launch({
         headless: true,
