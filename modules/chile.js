@@ -81,8 +81,16 @@ const getFunctionsCinemark = async (crawler) => {
     })
 
     await page.waitForTimeout(1500)
-    await page.waitForSelector(".billboard-days li button")
-    await page.click("div.change-theatre-button button.next")
+    try {
+        await page.waitForSelector("#theatre-show>div:nth-child(2):not(.loading-container)")
+        await page.waitForSelector(".billboard-days li button")
+    } catch (e) {
+        await browser.close();
+        return [];
+    }
+    // await page.waitForTimeout(1500)
+    // await page.waitForSelector(".billboard-days li button")
+    // await page.click("div.change-theatre-button button.next")
 
     const filtroFechas = await page.$$(".billboard-days li button")
     const data = []

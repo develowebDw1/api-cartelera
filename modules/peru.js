@@ -232,6 +232,13 @@ const getFunctionsCineStar = async (crawler) => {
         for (let p = 0; p < peliculas.length; p++) {
             const pelicula = await page.evaluate( pelicula => {
                 let nombre = pelicula.querySelector("p").innerText.replace(" (HD) (DOB)", "")
+                                                                    .replace("(HD) (DOB)", "")
+                                                                    .replace(" (HD) (DOB) ", "")
+                                                                    .replace(" (HD)(DOB)", "")
+                                                                    .replace(" (HD)(DOB) ", "")
+                                                                    .replace("(HD) (DOB)", "")
+                                                                    .replace("(HD)(D", "")
+                                                                    .replace(" OB)", "")
                 let formato = "-"
                 pelicula.querySelector("button.btn.btn-primary.ft-13").click()
                 return { nombre: nombre.trim(), formato: formato }
@@ -325,6 +332,13 @@ const getFunctionsMovieTime = async (crawler) => {
         for (let p = 0; p < peliculas.length; p++) {
             const pelicula = await page.evaluate( pelicula => {
                 let nombre = pelicula.querySelector("p").innerText.replace(" (HD) (DOB)", "")
+                                                                    .replace("(HD) (DOB)", "")
+                                                                    .replace(" (HD) (DOB) ", "")
+                                                                    .replace(" (HD)(DOB) ", "")
+                                                                    .replace(" (HD)(DOB) ", "")
+                                                                    .replace("(HD) (DOB)", "")
+                                                                    .replace("(HD)(D", "")
+                                                                    .replace(" OB)", "")
                 let formato = "-"
                 pelicula.querySelector("button.btn.btn-primary.ft-13").click()
                 return { nombre: nombre.trim(), formato: formato }
@@ -347,7 +361,7 @@ const getFunctionsMovieTime = async (crawler) => {
             }
             const horariosObj = [{ formato: pelicula.formato, times: timesObj }]
 
-            teatrosObj.push({ pelicula: pelicula.nombre, horarios: horariosObj })
+            teatrosObj.push({ pelicula: pelicula.nombre.replace(/\s+/g, ' '), horarios: horariosObj })
 
             await page.goto(`https://www.movietime.com.pe/cines/${crawler}/peliculas`, {
                 waitUntil: ['domcontentloaded']

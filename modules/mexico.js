@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const moment = require('moment')
 
 const getFunctionsForCine = async (crawler) => {
-    const meses = { 01: "ENERO", 02: "FEBRERO", 03: "MARZO", 04: "ABRIL", 05: "MAYO", 06: "JUNIO", 07: "JULIO", 08: "AGOSTO", 09: "SEPTIEMBRE", 10: "OCTUBRE", 11: "NOVIEMBRE", 12: "DICIEMBRE" }
+    const meses = { '01': "ENERO", '02': "FEBRERO", '03': "MARZO", '04': "ABRIL", '05': "MAYO", '06': "JUNIO", '07': "JULIO", '08': "AGOSTO", '09': "SEPTIEMBRE", '10': "OCTUBRE", '11': "NOVIEMBRE", '12': "DICIEMBRE" }
     const browser = await puppeteer.launch({ 
         headless: true, 
         args: ["--no-sandbox", "--disabled-setupid-sandbox"], 
@@ -15,7 +15,8 @@ const getFunctionsForCine = async (crawler) => {
     const data = [];
     let f = 0
     try {
-        await page.waitForSelector('#calendar-date-roller .calendar-date-link.roller-item:not(.disabled)')
+        // await page.waitForSelector('#calendar-date-roller .calendar-date-link.roller-item:not(.disabled)')
+        await page.waitForSelector('#theaterpage-showtimes-index-ui:not(.loading)', { timeout: 0 })
     } catch (e) {
         return data
     }
