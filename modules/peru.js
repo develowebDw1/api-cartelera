@@ -15,12 +15,12 @@ const getFunctionsCineplanet = async (crawler) => {
 
     try {
         await page.waitForSelector('div.autocomplete-container--app>div:nth-child(1):not(.loading)')
+        await page.waitForSelector("div.dropdown:nth-child(3) > select:nth-child(3) option")
     } catch (e) {
         await browser.close();
         return []
     }
 
-    await page.waitForSelector("div.dropdown:nth-child(3) > select:nth-child(3) option")
     const filtroFechas = await page.$$("div.dropdown:nth-child(3) > select:nth-child(3) option")
     const data = []
     for (const filtroFecha of filtroFechas) {
