@@ -140,7 +140,13 @@ const getFunctionsCinepolis = async (crawlerDist, crawler) => {
         waitUntil: ['domcontentloaded']
     })
 
-    await page.waitForSelector("article.row.tituloPelicula .descripcion.col8")
+    try {
+        await page.waitForSelector("article.row.tituloPelicula .descripcion.col8")
+    } catch (e) {
+        await browser.close();
+        return []
+    }
+
     let fechasOption = await page.$$("#cmbFechas option")
     const data = []
     for (let f = 0; f < fechasOption.length; f++) {
