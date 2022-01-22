@@ -85,7 +85,11 @@ const getFunctionsCinemark = async (crawler) => {
 
     const filtroFechas = await page.$$(".billboard-days li button")
     const data = []
+    let ci = 1
     for (const filtroFecha of filtroFechas) {
+        if (ci == 2) { break; }
+        ci++;
+
         const date = await page.evaluate( filtroFecha => {
             filtroFecha.click()
             return filtroFecha.querySelector("h5").innerText
