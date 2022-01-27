@@ -152,8 +152,14 @@ const getFunctionsCinepolis = async (crawlerDist, crawler) => {
     }
 
     let fechasOption = await page.$$("#cmbFechas option")
+
+    $x = 0
+    if (fechasOption.length > 0) {
+        $x = 1
+    }
+
     const data = []
-    for (let f = 0; f < fechasOption.length; f++) {
+    for (let f = 0; f < $x; f++) {
         const valorFecha = await page.evaluate( fecha => (fecha) ? fecha.getAttribute("value") : '', fechasOption[f])
         if (valorFecha == "") {
             continue;
