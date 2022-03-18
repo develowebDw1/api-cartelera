@@ -8,15 +8,22 @@ const getFunctionsCineColombia = async (crawlerDist, multiplex, crawler) => {
         args: ['--window-size=1440,750', "--no-sandbox", "--disabled-setupid-sandbox"], 
     });
     const page = await browser.newPage();
-    await page.goto(`https://www.cinecolombia.com/${crawlerDist}/${multiplex}/${crawler}`, {
-        waitUntil: ['domcontentloaded']
-    });
-
+    try {
+        await page.goto(`https://www.cinecolombia.com/${crawlerDist}/${multiplex}/${crawler}`, {
+            waitUntil: ['domcontentloaded']
+        });
+        await page.waitForSelector("ul.glide__slides")
+    } catch (e) {
+        return []
+    }
+    
     let data = [];
-    await page.waitForSelector("ul.glide__slides")
     let filters = await page.$$("li.glide__slide.date-filter__slider-item .radio-button.radio-button--light-blue")
     
     for (let index = 0; index < filters.length; index++) {
+
+        if (index == 1) { break; }
+
         const date = await page.evaluate( filter => {
             filter.click();
             return filter.querySelector("input").value
@@ -77,15 +84,29 @@ const getFunctionsCinemark = async (crawlerDist, crawler) => {
         args: ["--no-sandbox", "--disabled-setupid-sandbox"], 
     });
     const page = await browser.newPage();
-    await page.goto(`https://www.cinemark.com.co/ciudad/${crawlerDist}/${crawler}`);
+    
+    try {
+        await page.goto(`https://www.cinemark.com.co/ciudad/${crawlerDist}/${crawler}`)
+        
+        let modalStart = await page.$$(".ant-modal-close");
 
-    await page.waitForSelector("div.jsx-281138370.list-movies>.week .week__day")
+        if (modalStart.length > 0) {
+            await page.click(".ant-modal-close")
+        } 
+
+        await page.waitForSelector("div.jsx-281138370.list-movies>.week .week__day")
+    } catch (e) {
+        return []
+    }
 
     let filters = await page.$$("div.jsx-281138370.list-movies>.week .week__day");
     let data = [];
     let meses = { '01': "ENE", '02': "FEB", '03': "MAR", '04': "ABR", '05': "MAY", '06': "JUN", '07': "JUL", '08': "AGO", '09': "SEP", '10': "OCT", '11': "NOV", '12': "DIC" };
 
     for (let index = 0; index < filters.length; index++) {
+
+        if (index == 1) { break; }
+        
         const date = await page.evaluate( filter => {
             let fecha = filter.querySelector("span.week__date--small-font").innerText;
             filter.click();
@@ -147,11 +168,11 @@ const getFunctionsProcinal = async (crawlerDist, teatro, crawler) => {
         args: ["--no-sandbox", "--disabled-setupid-sandbox"],
     });
     const page = await browser.newPage()
-    await page.goto(`https://www.procinal.com.co/ciudad/${crawlerDist}/${teatro}/${crawler}`, {
-        waitUntil: ['domcontentloaded']
-    })
     
     try {
+        await page.goto(`https://www.procinal.com.co/ciudad/${crawlerDist}/${teatro}/${crawler}`, {
+            waitUntil: ['domcontentloaded']
+        })
         await page.waitForSelector("#root>div:not(.Intro)")
         await page.waitForSelector("#root>div:nth-child(2):not(.PageLoader)")
     } catch (e) {
@@ -168,8 +189,16 @@ const getFunctionsProcinal = async (crawlerDist, teatro, crawler) => {
         page.waitForSelector(".ImaxMovies_date-menu .ImaxMovies_date button")
         const filtroFechas = await page.$$(".ImaxMovies_date-menu .ImaxMovies_date button")
         let obj = []
+
         if (filtroFechas.length > 0) {
+            
+            let ci = 1
+
             for (const filtroFecha of filtroFechas) {
+
+                if (ci == 2) { break; }
+                ci++
+                
                 const date = await page.evaluate( filtroFecha => {
                     filtroFecha.click()
                     return filtroFecha.innerText
@@ -214,7 +243,14 @@ async function procianlTpl (page) {
     const filtroFechas = await page.$$(".TheaterMovies_date-menu .TheaterMovies_date button")
     if (filtroFechas.length > 0) {
         const fn = []
+
+        let ci = 1
+
         for (const filtroFecha of filtroFechas) {
+
+            if (ci == 2) { break; }
+            ci++
+
             const date = await page.evaluate( filtroFecha => {
                 filtroFecha.click()
                 return filtroFecha.innerText
@@ -272,12 +308,11 @@ const getFunctionsCinepolis = async (crawlerDist, crawler) => {
         args: ['--window-size=1200,1080', "--no-sandbox", "--disabled-setupid-sandbox"], 
     });
     const page = await browser.newPage()
-
-    await page.goto(`https://www.cinepolis.com.co/cartelera/${crawlerDist}/${crawler}`, {
-        waitUntil: ['domcontentloaded']
-    })
-
+    
     try {
+        await page.goto(`https://www.cinepolis.com.co/cartelera/${crawlerDist}/${crawler}`, {
+        waitUntil: ['domcontentloaded']
+        })
         await page.waitForSelector("article.row.tituloPelicula .descripcion.col8", { timeout: 6000 })
     } catch (e) {
         await browser.close();
@@ -287,6 +322,9 @@ const getFunctionsCinepolis = async (crawlerDist, crawler) => {
     const data = []
 
     for (let f = 0; f < fechasOption.length; f++) {
+
+        if (f == 1) { break; }
+
         const valorFecha = await page.evaluate( fecha => (fecha) ? fecha.getAttribute("value") : '', fechasOption[f])
         if (valorFecha == "") {
             continue;

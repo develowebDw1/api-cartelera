@@ -4,18 +4,17 @@ const moment = require('moment')
 const getFunctionsCineplanet = async (crawler) => {
     const browser = await puppeteer.launch({ 
         headless: true,
-        defaultViewport: null,
-        args: ['--window-size=1440,1080', "--no-sandbox", "--disabled-setupid-sandbox"],
+        args: ["--no-sandbox", "--disabled-setupid-sandbox"],
     });
     const page = await browser.newPage();
 
-    await page.goto(`https://www.cineplanet.com.pe/cinemas/${crawler}`, {
-        waitUntil: ['domcontentloaded']
-    })
-
     try {
-        await page.waitForSelector('div.autocomplete-container--app>div:nth-child(1):not(.loading)')
+        await page.goto(`https://www.cineplanet.com.pe/cinemas/${crawler}`, {
+            waitUntil: ['domcontentloaded']
+        })
+        // await page.waitForSelector('div.autocomplete-container--app>div:nth-child(1):not(.loading)')
         await page.waitForSelector("div.dropdown:nth-child(3) > select:nth-child(3) option")
+
     } catch (e) {
         await browser.close();
         return []
@@ -23,7 +22,12 @@ const getFunctionsCineplanet = async (crawler) => {
 
     const filtroFechas = await page.$$("div.dropdown:nth-child(3) > select:nth-child(3) option")
     const data = []
+    // let ci = 1
+
     for (const filtroFecha of filtroFechas) {
+        // if (ci == 2) { break; }
+        // ci++;
+
         const date = await page.evaluate( filtroFecha => {
             let fecha = filtroFecha.value.split("T")
             return { f: fecha[0], v: filtroFecha.value }
@@ -68,12 +72,12 @@ const getFunctionsCinemark = async (crawler) => {
 
     const page = await browser.newPage();
 
-    await page.goto(`https://www.cinemark-peru.com/cine?tag=${crawler}`, {
-        waitUntil: ['domcontentloaded']
-    })
-
-    await page.waitForTimeout(1500)
     try {
+        await page.goto(`https://www.cinemark-peru.com/cine?tag=${crawler}`, {
+            waitUntil: ['domcontentloaded']
+        })
+
+        await page.waitForTimeout(1500)
         await page.waitForSelector("#theatre-show>div:nth-child(2):not(.loading-container)")
         await page.waitForSelector(".billboard-days li button")
     } catch (e) {
@@ -140,11 +144,10 @@ const getFunctionsCinepolis = async (crawlerDist, crawler) => {
     });
     const page = await browser.newPage()
 
-    await page.goto(`https://www.cinepolis.com.pe/cartelera/${crawlerDist}/${crawler}`, {
-        waitUntil: ['domcontentloaded']
-    })
-
     try {
+        await page.goto(`https://www.cinepolis.com.pe/cartelera/${crawlerDist}/${crawler}`, {
+            waitUntil: ['domcontentloaded']
+        })
         await page.waitForSelector("article.row.tituloPelicula .descripcion.col8")
     } catch (e) {
         await browser.close();
@@ -220,11 +223,11 @@ const getFunctionsCineStar = async (crawler) => {
         args: ['--window-size=1440,800', "--no-sandbox", "--disabled-setupid-sandbox"],
     })
     const page = await browser.newPage()
-    await page.goto(`https://www.cinestar.com.pe/cines/${crawler}/peliculas`, {
-        waitUntil: ['domcontentloaded']
-    })
 
     try {
+        await page.goto(`https://www.cinestar.com.pe/cines/${crawler}/peliculas`, {
+            waitUntil: ['domcontentloaded']
+        })
         await page.waitForSelector('app-cinema-movies>div>div>div>div:not(:nth-child(2))')
     } catch (e) {
         await browser.close();
@@ -236,6 +239,9 @@ const getFunctionsCineStar = async (crawler) => {
     let filtroFechas = await page.$$(".ng-dropdown-panel.ng-select-bottom .ng-dropdown-panel-items.scroll-host .ng-option")
     const data = []
     for (let f = 0; f < filtroFechas.length; f++) {
+
+        if (f == 1) { break; }
+
         const date = await page.evaluate( fecha => {
             fecha.click()
             return fecha.querySelector("span").innerText
@@ -247,14 +253,12 @@ const getFunctionsCineStar = async (crawler) => {
         const teatrosObj = []
         for (let p = 0; p < peliculas.length; p++) {
             const pelicula = await page.evaluate( pelicula => {
-                let nombre = pelicula.querySelector("p").innerText.replace(" (HD) (DOB)", "")
-                                                                    .replace("(HD) (DOB)", "")
-                                                                    .replace(" (HD) (DOB) ", "")
-                                                                    .replace(" (HD)(DOB)", "")
+                let nombre = pelicula.querySelector("p").innerText.replace("(HD) (DOB)", "")
                                                                     .replace(" (HD)(DOB) ", "")
                                                                     .replace("(HD) (DOB)", "")
                                                                     .replace("(HD)(D", "")
                                                                     .replace(" OB)", "")
+                                                                    
                 let formato = "-"
                 pelicula.querySelector("button.btn.btn-primary.ft-13").click()
                 return { nombre: nombre.trim(), formato: formato }
@@ -284,13 +288,13 @@ const getFunctionsCineStar = async (crawler) => {
             })
 
             await page.waitForSelector(".scroll-cinema-movies.d-none.d-md-block")
-            await page.click(".custom.ng-select.filter.fecha .ng-select-container .ng-value-container")
-            filtroFechas = await page.$$(".ng-dropdown-panel.ng-select-bottom .ng-dropdown-panel-items.scroll-host .ng-option")
-            const date2 = await page.evaluate( fecha => {
-                fecha.click()
-            }, filtroFechas[f])
+            // await page.click(".custom.ng-select.filter.fecha .ng-select-container .ng-value-container")
+            // filtroFechas = await page.$$(".ng-dropdown-panel.ng-select-bottom .ng-dropdown-panel-items.scroll-host .ng-option")
+            // const date2 = await page.evaluate( fecha => {
+            //     fecha.click()
+            // }, filtroFechas[f])
 
-            await page.waitForSelector(".scroll-cinema-movies.d-none.d-md-block")
+            // await page.waitForSelector(".scroll-cinema-movies.d-none.d-md-block")
             peliculas = await page.$$("#movies-container app-movie-card>div")
         }
 
@@ -303,7 +307,7 @@ const getFunctionsCineStar = async (crawler) => {
         let fecha = fechaAnio + "-" + fechaMes + "-" + fechaDia
         data.push({ fecha: fecha, teatros: teatrosObj })
 
-        await page.click(".custom.ng-select.filter.fecha .ng-select-container .ng-value-container")
+        // await page.click(".custom.ng-select.filter.fecha .ng-select-container .ng-value-container")
         filtroFechas = await page.$$(".ng-dropdown-panel.ng-select-bottom .ng-dropdown-panel-items.scroll-host .ng-option")
     }
 
@@ -320,11 +324,11 @@ const getFunctionsMovieTime = async (crawler) => {
         args: ['--window-size=1440,800', "--no-sandbox", "--disabled-setupid-sandbox"],
     })
     const page = await browser.newPage()
-    await page.goto(`https://www.movietime.com.pe/cines/${crawler}/peliculas`, {
-        waitUntil: ['domcontentloaded']
-    })
     
     try {
+        await page.goto(`https://www.movietime.com.pe/cines/${crawler}/peliculas`, {
+            waitUntil: ['domcontentloaded']
+        })
         await page.waitForSelector('app-cinema-movies>div>div>div>div:not(:nth-child(2))')
     } catch (e) {
         await browser.close();
@@ -336,6 +340,9 @@ const getFunctionsMovieTime = async (crawler) => {
     let filtroFechas = await page.$$(".ng-dropdown-panel.ng-select-bottom .ng-dropdown-panel-items.scroll-host .ng-option")
     const data = []
     for (let f = 0; f < filtroFechas.length; f++) {
+
+        if (f == 1) { break; }
+
         const date = await page.evaluate( fecha => {
             fecha.click()
             return fecha.querySelector("span").innerText
@@ -347,14 +354,12 @@ const getFunctionsMovieTime = async (crawler) => {
         const teatrosObj = []
         for (let p = 0; p < peliculas.length; p++) {
             const pelicula = await page.evaluate( pelicula => {
-                let nombre = pelicula.querySelector("p").innerText.replace(" (HD) (DOB)", "")
-                                                                    .replace("(HD) (DOB)", "")
-                                                                    .replace(" (HD) (DOB) ", "")
-                                                                    .replace(" (HD)(DOB) ", "")
+                let nombre = pelicula.querySelector("p").innerText.replace("(HD) (DOB)", "")
                                                                     .replace(" (HD)(DOB) ", "")
                                                                     .replace("(HD) (DOB)", "")
                                                                     .replace("(HD)(D", "")
                                                                     .replace(" OB)", "")
+                                                                    
                 let formato = "-"
                 pelicula.querySelector("button.btn.btn-primary.ft-13").click()
                 return { nombre: nombre.trim(), formato: formato }
@@ -383,13 +388,13 @@ const getFunctionsMovieTime = async (crawler) => {
                 waitUntil: ['domcontentloaded']
             })
             await page.waitForSelector(".scroll-cinema-movies.d-none.d-md-block")
-            await page.click(".custom.ng-select.filter.fecha .ng-select-container .ng-value-container")
-            filtroFechas = await page.$$(".ng-dropdown-panel.ng-select-bottom .ng-dropdown-panel-items.scroll-host .ng-option")
-            const date2 = await page.evaluate( fecha => {
-                fecha.click()
-            }, filtroFechas[f])
+            // await page.click(".custom.ng-select.filter.fecha .ng-select-container .ng-value-container")
+            // filtroFechas = await page.$$(".ng-dropdown-panel.ng-select-bottom .ng-dropdown-panel-items.scroll-host .ng-option")
+            // const date2 = await page.evaluate( fecha => {
+            //     fecha.click()
+            // }, filtroFechas[f])
 
-            await page.waitForSelector(".scroll-cinema-movies.d-none.d-md-block")
+            // await page.waitForSelector(".scroll-cinema-movies.d-none.d-md-block")
             peliculas = await page.$$("#movies-container app-movie-card>div")
         }
 
@@ -402,7 +407,7 @@ const getFunctionsMovieTime = async (crawler) => {
         let fecha = fechaAnio + "-" + fechaMes + "-" + fechaDia
         data.push({ fecha: fecha, teatros: teatrosObj })
 
-        await page.click(".custom.ng-select.filter.fecha .ng-select-container .ng-value-container")
+        // await page.click(".custom.ng-select.filter.fecha .ng-select-container .ng-value-container")
         filtroFechas = await page.$$(".ng-dropdown-panel.ng-select-bottom .ng-dropdown-panel-items.scroll-host .ng-option")
     }
 

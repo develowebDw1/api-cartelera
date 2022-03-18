@@ -16,7 +16,7 @@ const getFunctionsForCine = async (crawler) => {
     let f = 0
     try {
         // await page.waitForSelector('#calendar-date-roller .calendar-date-link.roller-item:not(.disabled)')
-        await page.waitForSelector('#theaterpage-showtimes-index-ui:not(.loading)', { timeout: 8000 })
+        await page.waitForSelector('#theaterpage-showtimes-index-ui:not(.loading)', { timeout: 0 })
     } catch (e) {
         return data
     }
@@ -27,7 +27,7 @@ const getFunctionsForCine = async (crawler) => {
             return { day: filter.querySelector("div.num").innerText, month: filter.querySelector("div.month").innerText }
         }, filter)
 
-        await page.waitForSelector('#theaterpage-showtimes-index-ui:not(.loading)', { timeout: 8 })
+        await page.waitForSelector('#theaterpage-showtimes-index-ui:not(.loading)', { timeout: 0 })
 
         const dis = await page.$('.card.movie-card-theater')
         if (!dis) {

@@ -2,20 +2,27 @@ const puppeteer = require('puppeteer');
 const moment = require('moment')
 
 const getFunctionsCinemark = async (district, cine) => {
+    let meses = { '01': "ENE", '02': "FEB", '03': "MAR", '04': "ABR", '05': "MAY", '06': "JUN", '07': "JUL", '08': "AGO", '09': "SEP", '10': "OCT", '11': "NOV", '12': "DIC" };
+    
     const browser = await puppeteer.launch({ 
         headless: true, 
         args: ["--no-sandbox", "--disabled-setupid-sandbox"], 
     });
     const page = await browser.newPage();
-    await page.goto(`https://www.cinemark.com.ec/ciudad/${district}/${cine}`);
-
-    await page.waitForSelector('div.week:not(.week--is-disabled)', { timeout: 0 })
+    try {
+        await page.goto(`https://www.cinemark.com.ec/ciudad/${district}/${cine}`);
+        await page.waitForSelector('div.week:not(.week--is-disabled)', { timeout: 0 })
+    } catch (e) {
+        return []
+    }
     
     let filters = await page.$$("div.list-movies>.week .week__day");
     let data = [];
-    let meses = { '01': "ENE", '02': "FEB", '03': "MAR", '04': "ABR", '05': "MAY", '06': "JUN", '07': "JUL", '08': "AGO", '09': "SEP", '10': "OCT", '11': "NOV", '12': "DIC" };
 
     for (let index = 0; index < filters.length; index++) {
+
+        if (index == 1) { break; }
+
         const date = await page.evaluate( filter => {
             let fecha = filter.querySelector("span.week__date--small-font").innerText;
             filter.click();

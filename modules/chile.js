@@ -8,15 +8,22 @@ const getFunctionsCineHoys = async (crawlerDis, crawler) => {
         args: ["--no-sandbox", "--disabled-setupid-sandbox"],
     });
     const page = await browser.newPage()
-    await page.goto(`https://cinehoyts.cl/cartelera/${crawlerDis}/${crawler}`, {
-        // timeout: 10000,
-        waitUntil: ['domcontentloaded']
-    })
+    
+    try {
+        await page.goto(`https://cinehoyts.cl/cartelera/${crawlerDis}/${crawler}`, {
+            waitUntil: ['domcontentloaded']
+        })
+        await page.waitForSelector("article.row.tituloPelicula .descripcion.col8")
+    } catch (e) {
+        return []
+    }
 
-    await page.waitForSelector("article.row.tituloPelicula .descripcion.col8")
     let fechasOption = await page.$$("#cmbFechas option")
     const data = []
     for (let f = 0; f < fechasOption.length; f++) {
+
+        if (f == 1) { break; }
+
         const valorFecha = await page.evaluate( fecha => (fecha) ? fecha.getAttribute("value") : '', fechasOption[f])
         if (valorFecha == "") {
             continue;
@@ -76,12 +83,12 @@ const getFunctionsCinemark = async (crawler) => {
         args: ["--no-sandbox", "--disabled-setupid-sandbox"], 
     });
     const page = await browser.newPage();
-    await page.goto(`https://www.cinemark.cl/cine?tag=${crawler}`, {
-        waitUntil: ['domcontentloaded']
-    })
-
-    await page.waitForTimeout(1500)
+    
     try {
+        await page.goto(`https://www.cinemark.cl/cine?tag=${crawler}`, {
+            waitUntil: ['domcontentloaded']
+        })
+        await page.waitForTimeout(1500)
         await page.waitForSelector("#theatre-show>div:nth-child(2):not(.loading-container)")
         await page.waitForSelector(".billboard-days li button")
     } catch (e) {
@@ -95,7 +102,13 @@ const getFunctionsCinemark = async (crawler) => {
     const filtroFechas = await page.$$(".billboard-days li button")
     const data = []
 
+    let ci = 1
+
     for (const filtroFecha of filtroFechas) {
+
+        if (ci == 2) { break; }
+        ci++
+
         const date = await page.evaluate( filtroFecha => {
             filtroFecha.click()
             return filtroFecha.querySelector("h5").innerText
@@ -144,14 +157,25 @@ const getFunctionsCineplanet = async (crawler) => {
     });
     const page = await browser.newPage();
 
-    await page.goto(`https://www.cineplanet.cl/cines/${crawler}`, {
-        waitUntil: ['domcontentloaded']
-    })
+    try {
+        await page.goto(`https://www.cineplanet.cl/cines/${crawler}`, {
+            waitUntil: ['domcontentloaded']
+        })
+        await page.waitForSelector("div.dropdown:nth-child(3) > select:nth-child(3) option")
+    } catch (e) {
+        return []
+    }
 
-    await page.waitForSelector("div.dropdown:nth-child(3) > select:nth-child(3) option")
     const filtroFechas = await page.$$("div.dropdown:nth-child(3) > select:nth-child(3) option")
     const data = []
+
+    let ci = 1
+
     for (const filtroFecha of filtroFechas) {
+
+        if (ci == 2) { break; }
+        ci++
+
         const date = await page.evaluate( filtroFecha => {
             let fecha = filtroFecha.value.split("T")
             return { f: fecha[0], v: filtroFecha.value }
